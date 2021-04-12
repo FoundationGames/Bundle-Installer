@@ -1,0 +1,9 @@
+{
+    "download_configs": {
+        "Example": {
+            "id": "example",
+            "downloads": {
+            }
+        }
+    }
+}

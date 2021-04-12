@@ -1,0 +1,56 @@
+plugins {
+    // Apply the application plugin to add support for building a CLI application in Java.
+    id 'application'
+
+    // Shadow plugin to bundle Gson into the jar
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+repositories {
+    // Use JCenter for resolving dependencies.
+    jcenter()
+
+    // Also for more dependencies
+    mavenCentral()
+
+    // jit pack
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+dependencies {
+    // Use JUnit test framework.
+    testImplementation 'junit:junit:4.13'
+
+    // This dependency is used by the application.
+    implementation 'com.google.guava:guava:29.0-jre'
+
+    // Gson for JSON
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+
+    // Download from Curse
+    implementation "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT"
+}
+
+application {
+    // Define the main class for the application.
+    mainClass = 'bundle.App'
+}
+
+shadowJar {
+    // Set shadow jar properties
+    archiveBaseName.set("${project.archive_base_name}")
+    archiveVersion.set("${project.archive_version}")
+    archiveClassifier.set("${project.archive_classifier}")
+
+    mainClassName = 'bundle.App'
+}
+
+jar {
+    // Manifest for the jar
+    manifest {
+        attributes 'Main-Class': 'bundle.App'
+    }
+}
