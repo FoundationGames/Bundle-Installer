@@ -2,10 +2,16 @@ package bundle.config;
 
 import bundle.download.AbstractDownload;
 import bundle.download.DownloadManager;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +25,37 @@ public class ConfigParser {
 
     public static InstallerConfig parse(JsonObject config) throws ConfigParseException {
         InstallerConfig.Builder iCfg = new InstallerConfig.Builder();
-        if (config.get("download_configs").isJsonObject()) {
+        if (config.has("include")) {
+            if (config.get("include").isJsonArray()) {
+                for (JsonElement include : config.getAsJsonArray("include")) {
+                    if (include.isJsonPrimitive() && include.getAsJsonPrimitive().isString()) {
+                        String url = include.getAsString();
+                        if (url.endsWith(".json")) {
+                            try {
+                                InputStreamReader reader = new InputStreamReader(new URL(url).openStream(), StandardCharsets.UTF_8);
+                                JsonObject remoteConfig = new Gson().fromJson(reader, JsonObject.class);
+                                fillBuilder(iCfg, remoteConfig);
+                            } catch (IOException e) {
+                                cpe(e, "Entry 'include' contained an invalid URL '%s'", url);
+                            }
+                        } else cpe("Entry 'include' contained a URL '%s' to a non-json file", url);
+                    } else cpe("Entry 'include' contained an element which was not a string");
+                }
+            } else cpe("Entry 'include' in installer config was not an array");
+        }
+        fillBuilder(iCfg, config);
+        return iCfg.build();
+    }
+
+    public static void fillBuilder(InstallerConfig.Builder iCfg, JsonObject config) throws ConfigParseException {
+        if (config.has("download_configs") && config.get("download_configs").isJsonObject()) {
             JsonObject dcHolder = config.getAsJsonObject("download_configs");
             for (String dcKey : dcHolder.keySet()) {
                 if (dcHolder.has(dcKey) && dcHolder.get(dcKey).isJsonObject()) {
                     JsonObject dcObject = dcHolder.getAsJsonObject(dcKey);
                     String dlCfgId = "";
                     if (dcObject.has("id") && dcObject.get("id").isJsonPrimitive() && dcObject.get("id").getAsJsonPrimitive().isString()) {
-                        dlCfgId = dcObject.get("id").getAsJsonPrimitive().getAsString();
+                        dlCfgId = dcObject.get("id").getAsString();
                     } else cpe("Entry 'id' in download config '%s' was nonexistent or not a string", dcKey);
                     DownloadConfig.Builder dlCfg = new DownloadConfig.Builder(dlCfgId);
                     if (dcObject.has("downloads") && dcObject.get("downloads").isJsonObject()) {
@@ -53,7 +82,6 @@ public class ConfigParser {
                 } else cpe("Entry '%s' in 'download_configs' was nonexistent or not an object", dcKey);
             }
         } else cpe("Entry 'download_configs' in the installer config was nonexistent or not an object");
-        return iCfg.build();
     }
 
     public static AbstractDownload parseDownload(String dcKey, String dlKey, JsonObject download) throws ConfigParseException {
@@ -70,5 +98,9 @@ public class ConfigParser {
 
     private static void cpe(String msg, Object ... args) throws ConfigParseException {
         throw new ConfigParseException(String.format(msg, args));
+    }
+
+    private static void cpe(Throwable cause, String msg, Object ... args) throws ConfigParseException {
+        throw new ConfigParseException(String.format(msg, args), cause);
     }
 }
