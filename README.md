@@ -5,30 +5,31 @@ A Minecraft client modpack installer for Fabric mods, supporting the vanilla lau
 - [✅] Read from a configuration file
 - [✅] Download mods from the configuration file
 - [✅] Allow the configuration file to be hosted remotely
-- [❌] Download mods to the Minecraft game directory
-- [❌] Have a GUI
-- [❌] GUI shows all download configurations
-- [❌] GUI lets you choose the game directory to download to
+- [✅] Download mods to the Minecraft game directory
+- [✅] Have a GUI
+- [✅] GUI shows all download configurations
+- [✅] GUI lets you choose the game directory to download to
 - [❌] GUI allows you to select and deselect mods in a configuration
 - [❌] Create Bundle Loader, a fork of Fabric Loader that reads only mods and configs from a separate game directory while using vanilla's directory for everything else
 - [❌] Install Bundle Loader or Fabric Loader as necessary
 - [❌] Allow for more customization of the installer GUI (logo, layout, etc)
 
 ## What it can do now
-Bundle Installer currently only works as a basic mod downloader. It can download a collection of mods, each being either from [CurseForge](https://www.curseforge.com/) or from a direct file link. You can customize the list of mods to download in the installer's `installer_config.json` file, before compiling the installer. The installer has no user interface at the moment, and will only download mods to the directory set in the installer's `installer.properties` file. <br/>
+Bundle Installer currently only works as a basic mod downloader. It can download a collection of mods, each being either from [CurseForge](https://www.curseforge.com/) or from a direct file link. In the installer UI, you can choose the game directory (`.minecraft` folder) to "install" to, and in that directory it will create further directories: `.bundle/<installation>/mods` in which mods will be downloaded to. You can customize the list of mods to download in the installer's `installer_config.json` file, before compiling the installer. You can customize some aspects of the UI in `installer.properties`. <br/>
 <br/>
 To make a Bundle pack, it is recommended to clone this repository or fork the project. <br/>
 <br/>
-The first file to change will be the `installer.properties` file, located in `app/src/main/resources/`. The only working fields are `dev_download_dir` and `dev_download_config`. The download dir must be set to a valid directory on your device, and the download config must be set to the name of a valid download config specified in the installer config json. When run, all mods from the specified download config will be downloaded to the specified directory. <br/>
+The first file you can change will be the `installer.properties` file, located in `app/src/main/resources/`. Here you may set the width, height, and resizability of the installer window. <br/>
 <br/>
 **Example `installer.properties`**
 ```properties
-dev_download_dir=C:/path/to/download/folder/
-dev_download_config=Example Download Config
+width=500
+height=300
+resizable=false
 ```
 <br/>
 
-The next file to change will be `installer_config.json`, also located in `app/src/main/resources/`. This file will contain your download configurations, or installations the user will be able to choose from. Choosing the download config is not implemented yet as there is no UI, so it will choose the one specified in the `installer.properties`. <br/>
+The next file to change will be `installer_config.json`, also located in `app/src/main/resources/`. This file will contain your download configurations, or installations the user will be able to choose from in the installer UI. <br/>
 <br/>
 **Example `installer_config.json`**
 ```json
@@ -70,6 +71,19 @@ The next file to change will be `installer_config.json`, also located in `app/sr
                     }
                 ]
             }
+        },
+        "Example Download Config 2": {
+            "id": "example-2",
+            "downloads": {
+                "Example Project": [
+                    {
+                        "type": "direct",
+                        "data": {
+                            "url": "https://example.com/example-2.jar"
+                        } 
+                    }
+                ]
+            }
         }
     }
 }
@@ -99,7 +113,7 @@ Once you have configured these files, you can build this project into a working 
 <br/>
 In order to do so, open a terminal and navigate to the root of the project. Run the command `gradlew shadowJar` or `./gradlew shadowJar` (PowerShell) and the jar will be built. <br/>
 <br/>
-You will find the built installer jar in `app/build/libs`. Running the jar will download the mods.
+You will find the built installer jar in `app/build/libs`. Running the jar will open the UI and allow you to download the mods.
                 
 
  

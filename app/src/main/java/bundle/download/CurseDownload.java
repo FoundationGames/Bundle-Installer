@@ -1,7 +1,6 @@
 package bundle.download;
 
 import com.therandomlabs.curseapi.CurseAPI;
-import com.therandomlabs.curseapi.CurseException;
 
 import java.nio.file.Path;
 
@@ -18,6 +17,6 @@ public class CurseDownload extends AbstractDownload {
     public void downloadTo(Path path) throws DownloadException {
         try {
             CurseAPI.downloadFileToDirectory(projectID, fileID, path);
-        } catch (CurseException e) { dlEx(e); }
+        } catch (Exception e) { dlEx(e); }
     }
 }

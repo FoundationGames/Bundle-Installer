@@ -5,6 +5,8 @@ import bundle.config.DownloadConfig;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,14 +21,22 @@ public enum DownloadManager {;
         DOWNLOAD_TYPES.put("direct", Downloads::directDownload);
     }
 
-    public static List<DownloadException> downloadFilesTo(Path path, DownloadConfig config) {
+    public static List<DownloadException> downloadFilesTo(Path path, DownloadConfig config) throws IOException {
         List<DownloadException> errors = new ArrayList<>();
+        Path modFolder = path.resolve(config.id);
+        if (!Files.exists(modFolder) || !Files.isDirectory(modFolder)) {
+            Files.createDirectory(modFolder);
+        }
+        modFolder = modFolder.resolve("mods");
+        if (!Files.exists(modFolder) || !Files.isDirectory(modFolder)) {
+            Files.createDirectory(modFolder);
+        }
         for (ImmutableList<AbstractDownload> dlList : config.downloads.values()) {
             boolean success = false;
             for (AbstractDownload download : dlList) {
                 if (success) continue;
                 try {
-                    download.downloadTo(path);
+                    download.downloadTo(modFolder);
                     success = true;
                 } catch (DownloadException e) {
                     errors.add(e);

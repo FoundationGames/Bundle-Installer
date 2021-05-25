@@ -15,16 +15,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigParser {
-
-    /*
-     *              help
-     *
-     *              this has convinced me that DFU codecs may not be so bad
-     */
-
+public enum ConfigParser {;
     public static InstallerConfig parse(JsonObject config) throws ConfigParseException {
-        InstallerConfig.Builder iCfg = new InstallerConfig.Builder();
+        var iCfg = new InstallerConfig.Builder();
         if (config.has("include")) {
             if (config.get("include").isJsonArray()) {
                 for (JsonElement include : config.getAsJsonArray("include")) {
@@ -87,7 +80,7 @@ public class ConfigParser {
     public static AbstractDownload parseDownload(String dcKey, String dlKey, JsonObject download) throws ConfigParseException {
         if (download.has("type") && download.get("type").isJsonPrimitive() && download.get("type").getAsJsonPrimitive().isString()) {
             String tStr = download.get("type").getAsString();
-            DownloadManager.TypeParser type = DownloadManager.DOWNLOAD_TYPES.get(tStr);
+            var type = DownloadManager.DOWNLOAD_TYPES.get(tStr);
             if (type == null) cpe("Entry 'type' in download '%s' in download config '%s' was an invalid download type '%s'", dlKey, dcKey, tStr);
             if (download.has("data") && download.get("data").isJsonObject()) {
                 return type.getDownload(dlKey, download.getAsJsonObject("data"));
