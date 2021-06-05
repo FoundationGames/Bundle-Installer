@@ -24,4 +24,8 @@ public abstract class AbstractDownload {
         }
         throw new DownloadException(String.format("Failed to download file '%s'!", this.name));
     }
+
+    protected final void dlEx(String msg) throws DownloadException {
+        throw new DownloadException(String.format("Failed to download file '%s', %s", this.name, msg));
+    }
 }

@@ -13,12 +13,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -28,6 +31,8 @@ public final class BundleInstaller {
     public final InstallerConfig installerConfig;
     public final Properties installerProperties;
     public final BundleGuiApp gui;
+
+    public static final SimpleDateFormat LAUNCHER_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
     public BundleInstaller() {
         InputStream configStream = BundleInstaller.class.getClassLoader().getResourceAsStream("installer_config.json");
@@ -73,9 +78,26 @@ public final class BundleInstaller {
         }
         DownloadConfig dlConfig = this.installerConfig.configs.get(selectedInstall);
 
+        makeLauncherProfile(selectedInstall, dlConfig);
+
         if (!Files.exists(gameDir)) {
             return ImmutableList.of(new DownloadException(String.format("Selected game directory '%s' does not exist!", gameDir)));
         }
+
+        Path versions = gameDir.resolve("versions");
+        if (!Files.exists(versions)) {
+            return ImmutableList.of(new DownloadException(String.format("Selected game directory '%s' does not contain a 'versions' folder!", gameDir)));
+        }
+
+        Path version = versions.resolve(dlConfig.id);
+        if (!Files.exists(version) || !Files.isDirectory(version)) {
+            Files.createDirectory(version);
+        }
+        JsonObject meta = VersionMetaCreator.createVersionMeta(dlConfig);
+        Path metaFile = version.resolve(dlConfig.id+".json");
+        BufferedWriter writer = Files.newBufferedWriter(metaFile);
+        new Gson().toJson(meta, writer);
+        writer.close();
 
         Path bundleDir = gameDir.resolve(".bundle");
         if (!Files.exists(bundleDir) || !Files.isDirectory(bundleDir)) {
@@ -83,5 +105,40 @@ public final class BundleInstaller {
         }
 
         return DownloadManager.downloadFilesTo(bundleDir, dlConfig);
+    }
+
+    private void makeLauncherProfile(String name, DownloadConfig download) throws IOException {
+        if (this.gameDir == null) {
+            throw new IllegalStateException("Tried to make launcher profile when not ready");
+        }
+
+        Path profiles = gameDir.resolve("launcher_profiles.json");
+
+        if (!Files.exists(profiles)) {
+            throw new IOException("Unable to create launcher profile, game folder does not contain 'launcher_profiles.json'");
+        }
+
+        InputStreamReader reader = new InputStreamReader(Files.newInputStream(profiles), StandardCharsets.UTF_8);
+        Gson gson = new Gson();
+        JsonObject lpObj = gson.fromJson(reader, JsonObject.class);
+
+        if (lpObj.has("profiles") && lpObj.get("profiles").isJsonObject()) {
+            JsonObject pfObj = lpObj.getAsJsonObject("profiles");
+            JsonObject profile = new JsonObject();
+            String date = LAUNCHER_DATE_FORMAT.format(new Date());
+            profile.addProperty("created", date);
+            profile.addProperty("lastUsed", date);
+            profile.addProperty("icon", installerProperties.getProperty("launcher_icon"));
+            profile.addProperty("lastVersionId", download.id);
+            profile.addProperty("name", name);
+            profile.addProperty("type", "custom");
+            profile.addProperty("gameDir", gameDir.resolve(".bundle").resolve(download.id).toString());
+            pfObj.add(installerProperties.getProperty("launcher_profile_id"), profile);
+            lpObj.add("profiles", pfObj);
+        } else throw new IOException("File 'launcher_profiles.json' is not complete");
+
+        BufferedWriter writer = Files.newBufferedWriter(profiles);
+        gson.toJson(lpObj, writer);
+        writer.close();
     }
 }

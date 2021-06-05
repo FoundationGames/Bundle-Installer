@@ -26,6 +26,9 @@ The first file you can change will be the `installer.properties` file, located i
 width=500
 height=300
 resizable=false
+
+launcher_icon=Dirt
+launcher_profile_id=Example Modpack
 ```
 <br/>
 
@@ -36,7 +39,9 @@ The next file to change will be `installer_config.json`, also located in `app/sr
 {
     "download_configs": {
         "Example Download Config": {
-            "id": "example",
+            "id": "example-0.0.0+1.16.5",
+            "loader_version": "0.11.3",
+            "game_version": "1.16.5",
             "downloads": {
                 "Example Curse Project": [
                     {
@@ -73,7 +78,9 @@ The next file to change will be `installer_config.json`, also located in `app/sr
             }
         },
         "Example Download Config 2": {
-            "id": "example-2",
+            "id": "example-two-0.0.0+1.16.5",
+            "loader_version": "0.11.3",
+            "game_version": "1.16.5",
             "downloads": {
                 "Example Project": [
                     {
@@ -88,10 +95,12 @@ The next file to change will be `installer_config.json`, also located in `app/sr
     }
 }
 ```
-- `"include": [strings ... ]` _OPTIONAL_ - A string array containing direct urls to json files, formatted like this one, to be used as installer configs. This can be used to remove the need to download new installers for each version of the pack, and instead update the remotely hosted json file. Remote json files cannot contain this field and it will be ignored.
+- `"include": [strings ... ]` _OPTIONAL_ - A string array containing direct urls to .json files to be used as installer configs. This can be used to remove the need to download new installers for each version of the pack, and instead update the remotely hosted json file. Remote json files cannot contain this field in order to prevent daisy-chained or recursive inclusion, and it will be ignored in those remote files.
 - `"download_configs" : {}` Contains all your download configs.
     - `"<download config name>" : {}` A download config, containing its id and downloads. Can be multiple.
-       - `"id" : string` A unique installation id for your download config. Unused for now, but it's important that this be a unique identifier which is a valid file name. <br/>
+       - `"id" : string` A unique installation id for your download config. This will be the game version id, and should preferably include the version of this download config as well as the target Minecraft version. <br/>
+       - `"loader_version" : string` The valid string for the version of Fabric Loader your download config will use, for example `0.11.3`. <br/>
+       - `"game_version" : string` The valid string for the version of Minecraft your download config will use, for example `1.16.5`. <br/>
        - `"downloads" : {}` Contains this download config's downloads. <br/>
            - `"<download name>" : []` A download object array, containing all the possible download sources in order of priority. Only one of the downloads in the array will actually be used, and the downloads will be ordered in priority (i.e. the first one will be tested to work first, and so on). This is in case a mod is removed from one source online, it is possible to have backups.
                - `{}` A download object, with a type and a data object.

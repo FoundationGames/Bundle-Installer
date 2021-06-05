@@ -2,10 +2,12 @@ package bundle.gui;
 
 import bundle.download.DownloadException;
 import bundle.installer.BundleInstaller;
+import com.google.common.collect.ImmutableList;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +23,12 @@ public class BundleGuiApp extends JFrame {
     private static final String FINISH_INSTALL_PANEL = "finish_install";
 
     public BundleGuiApp(BundleInstaller installer) {
-        super("Bundle Installer");
+        super(installer.installerProperties.getProperty("window_title"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         int w = Integer.parseInt(installer.installerProperties.getProperty("width"));
         int h = Integer.parseInt(installer.installerProperties.getProperty("height"));
         boolean resizable = installer.installerProperties.getProperty("resizable").equalsIgnoreCase("true");
-        setSize(w ,h);
+        setSize(w, h);
         setResizable(resizable);
         this.installer = installer;
 
@@ -38,33 +40,32 @@ public class BundleGuiApp extends JFrame {
 
     private JPanel installPanel() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 1));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             JPanel installSelection = new JPanel();
-                var names = this.installer.installerConfig.configNames;
+                ImmutableList<String> names = this.installer.installerConfig.configNames;
                 JComboBox<String> installs = new JComboBox<>(names.toArray(new String[names.size()]));
                 installs.addActionListener(action -> this.installer.selectedInstall = (String)((JComboBox<String>)action.getSource()).getSelectedItem());
                 installSelection.add(installs);
             panel.add(installSelection);
 
             JPanel dirSelection = new JPanel();
-                dirSelection.setLayout(new GridBagLayout());
-                JButton changeDir = new JButton("Choose Minecraft Folder");
+                JTextField filePath = new JTextField(this.installer.gameDir.toString());
+                filePath.addActionListener(action -> {
+                    this.installer.gameDir = Paths.get(((JTextField)action.getSource()).getText());
+                    System.out.println("TEXT FIELD CHANGED");
+                });
+                dirSelection.add(filePath);
+                JButton changeDir = new JButton("Browse ...");
                 changeDir.addActionListener(action -> changeGameDir());
                 dirSelection.add(changeDir);
             panel.add(dirSelection);
 
             JPanel installButtons = new JPanel();
                 installButtons.setLayout(new FlowLayout());
-                JButton cancel = new JButton("Cancel");
-                cancel.addActionListener(action -> {
-                    this.setVisible(false);
-                    System.exit(0);
-                });
+                JButton cancel = new JButton("Download as Modpack");
                 installButtons.add(cancel);
-                JButton info = new JButton("Info");
-                installButtons.add(info);
-                JButton install = new JButton("Install");
-                install.addActionListener(action -> {
+                JButton installMcFolder = new JButton("Install for Vanilla MC");
+                installMcFolder.addActionListener(action -> {
                     try {
                         this.finishErrors = this.installer.install();
                         this.finishLabel.setText("Finished Installing "+installer.selectedInstall+ (this.finishErrors.size() > 0 ? " with errors!" : "!"));
@@ -73,7 +74,7 @@ public class BundleGuiApp extends JFrame {
                         e.printStackTrace();
                     }
                 });
-                installButtons.add(install);
+                installButtons.add(installMcFolder);
             panel.add(installButtons);
         return panel;
     }

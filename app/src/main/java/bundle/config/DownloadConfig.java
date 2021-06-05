@@ -6,10 +6,14 @@ import com.google.common.collect.ImmutableMap;
 
 public final class DownloadConfig {
     public final String id;
+    public final String loaderVersion;
+    public final String gameVersion;
     public final ImmutableMap<String, ImmutableList<AbstractDownload>> downloads;
 
-    private DownloadConfig(String id, ImmutableMap<String, ImmutableList<AbstractDownload>> downloads) {
+    private DownloadConfig(String id, String loaderVersion, String gameVersion, ImmutableMap<String, ImmutableList<AbstractDownload>> downloads) {
         this.id = id;
+        this.loaderVersion = loaderVersion;
+        this.gameVersion = gameVersion;
         this.downloads = downloads;
     }
 
@@ -21,9 +25,13 @@ public final class DownloadConfig {
     public static class Builder {
         private final ImmutableMap.Builder<String, ImmutableList<AbstractDownload>> downloads = new ImmutableMap.Builder<>();
         private final String id;
+        private final String loaderVersion;
+        private final String gameVersion;
 
-        public Builder(String id) {
+        public Builder(String id, String loaderVersion, String gameVersion) {
             this.id = id;
+            this.loaderVersion = loaderVersion;
+            this.gameVersion = gameVersion;
         }
 
         public Builder with(String id, AbstractDownload ... dls) {
@@ -32,7 +40,7 @@ public final class DownloadConfig {
         }
 
         public DownloadConfig build() {
-            return new DownloadConfig(id, downloads.build());
+            return new DownloadConfig(id, loaderVersion, gameVersion, downloads.build());
         }
     }
 }

@@ -8,7 +8,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +16,7 @@ import java.util.List;
 
 public enum ConfigParser {;
     public static InstallerConfig parse(JsonObject config) throws ConfigParseException {
-        var iCfg = new InstallerConfig.Builder();
+        InstallerConfig.Builder iCfg = new InstallerConfig.Builder();
         if (config.has("include")) {
             if (config.get("include").isJsonArray()) {
                 for (JsonElement include : config.getAsJsonArray("include")) {
@@ -47,10 +46,18 @@ public enum ConfigParser {;
                 if (dcHolder.has(dcKey) && dcHolder.get(dcKey).isJsonObject()) {
                     JsonObject dcObject = dcHolder.getAsJsonObject(dcKey);
                     String dlCfgId = "";
+                    String dlCfgLv = "";
+                    String dlCfgGv = "";
                     if (dcObject.has("id") && dcObject.get("id").isJsonPrimitive() && dcObject.get("id").getAsJsonPrimitive().isString()) {
                         dlCfgId = dcObject.get("id").getAsString();
                     } else cpe("Entry 'id' in download config '%s' was nonexistent or not a string", dcKey);
-                    DownloadConfig.Builder dlCfg = new DownloadConfig.Builder(dlCfgId);
+                    if (dcObject.has("loader_version") && dcObject.get("loader_version").isJsonPrimitive() && dcObject.get("loader_version").getAsJsonPrimitive().isString()) {
+                        dlCfgLv = dcObject.get("loader_version").getAsString();
+                    } else cpe("Entry 'loader_version' in download config '%s' was nonexistent or not a string", dcKey);
+                    if (dcObject.has("game_version") && dcObject.get("game_version").isJsonPrimitive() && dcObject.get("game_version").getAsJsonPrimitive().isString()) {
+                        dlCfgGv = dcObject.get("game_version").getAsString();
+                    } else cpe("Entry 'game_version' in download config '%s' was nonexistent or not a string", dcKey);
+                    DownloadConfig.Builder dlCfg = new DownloadConfig.Builder(dlCfgId, dlCfgLv, dlCfgGv);
                     if (dcObject.has("downloads") && dcObject.get("downloads").isJsonObject()) {
                         JsonObject dlHolder = dcObject.getAsJsonObject("downloads");
                         for (String dlKey : dlHolder.keySet()) {
@@ -80,7 +87,7 @@ public enum ConfigParser {;
     public static AbstractDownload parseDownload(String dcKey, String dlKey, JsonObject download) throws ConfigParseException {
         if (download.has("type") && download.get("type").isJsonPrimitive() && download.get("type").getAsJsonPrimitive().isString()) {
             String tStr = download.get("type").getAsString();
-            var type = DownloadManager.DOWNLOAD_TYPES.get(tStr);
+            DownloadManager.TypeParser type = DownloadManager.DOWNLOAD_TYPES.get(tStr);
             if (type == null) cpe("Entry 'type' in download '%s' in download config '%s' was an invalid download type '%s'", dlKey, dcKey, tStr);
             if (download.has("data") && download.get("data").isJsonObject()) {
                 return type.getDownload(dlKey, download.getAsJsonObject("data"));
