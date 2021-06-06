@@ -10,8 +10,10 @@ A Minecraft client modpack installer for Fabric mods, supporting the vanilla lau
 - [✅] GUI shows all download configurations
 - [✅] GUI lets you choose the game directory to download to
 - [❌] GUI allows you to select and deselect mods in a configuration
-- [❌] Create Bundle Loader, a fork of Fabric Loader that reads only mods and configs from a separate game directory while using vanilla's directory for everything else
-- [❌] Install Bundle Loader or Fabric Loader as necessary
+- [⛔] Create Bundle Loader, a fork of Fabric Loader that reads only mods and configs from a separate game directory while using vanilla's directory for everything else
+- [⛔] Install Bundle Loader or Fabric Loader as necessary
+- [✅] Install Quilt Loader and create a game profile/version
+- [❌] Merge of https://github.com/QuiltMC/quilt-loader/pull/20 into Quilt Loader, allowing Bundle to change the mods and configs folder to read from for non-separate-game-dir installations
 - [❌] Allow for more customization of the installer GUI (logo, layout, etc)
 
 ## What it can do now
@@ -40,8 +42,9 @@ The next file to change will be `installer_config.json`, also located in `app/sr
     "download_configs": {
         "Example Download Config": {
             "id": "example-0.0.0+1.16.5",
-            "loader_version": "0.11.3",
+            "loader_version": "0.13.1-rc.6",
             "game_version": "1.16.5",
+            "separate_game_dir": true,
             "downloads": {
                 "Example Curse Project": [
                     {
@@ -79,8 +82,9 @@ The next file to change will be `installer_config.json`, also located in `app/sr
         },
         "Example Download Config 2": {
             "id": "example-two-0.0.0+1.16.5",
-            "loader_version": "0.11.3",
+            "loader_version": "0.13.1-rc.6",
             "game_version": "1.16.5",
+            "separate_game_dir": true,
             "downloads": {
                 "Example Project": [
                     {
@@ -99,8 +103,9 @@ The next file to change will be `installer_config.json`, also located in `app/sr
 - `"download_configs" : {}` Contains all your download configs.
     - `"<download config name>" : {}` A download config, containing its id and downloads. Can be multiple.
        - `"id" : string` A unique installation id for your download config. This will be the game version id, and should preferably include the version of this download config as well as the target Minecraft version. <br/>
-       - `"loader_version" : string` The valid string for the version of Fabric Loader your download config will use, for example `0.11.3`. <br/>
+       - `"loader_version" : string` The valid string for the version of Quilt Loader your download config will use, for example `0.13.1-rc.6`. You can find all versions listed [here.](https://meta.quiltmc.org/v3/versions/loader) <br/>
        - `"game_version" : string` The valid string for the version of Minecraft your download config will use, for example `1.16.5`. <br/>
+       - `"separate_game_dir" : boolean` Whether to use an entirely different game directory (for content modpacks), or use the vanilla directory while accessing only mods and configs separately (**This will only work with a Uuilt loader version merging [this PR's](https://github.com/QuiltMC/quilt-loader/pull/20) code**) <br/>
        - `"downloads" : {}` Contains this download config's downloads. <br/>
            - `"<download name>" : []` A download object array, containing all the possible download sources in order of priority. Only one of the downloads in the array will actually be used, and the downloads will be ordered in priority (i.e. the first one will be tested to work first, and so on). This is in case a mod is removed from one source online, it is possible to have backups.
                - `{}` A download object, with a type and a data object.

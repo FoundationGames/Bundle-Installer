@@ -48,6 +48,7 @@ public enum ConfigParser {;
                     String dlCfgId = "";
                     String dlCfgLv = "";
                     String dlCfgGv = "";
+                    boolean separateGameDir = false;
                     if (dcObject.has("id") && dcObject.get("id").isJsonPrimitive() && dcObject.get("id").getAsJsonPrimitive().isString()) {
                         dlCfgId = dcObject.get("id").getAsString();
                     } else cpe("Entry 'id' in download config '%s' was nonexistent or not a string", dcKey);
@@ -57,7 +58,10 @@ public enum ConfigParser {;
                     if (dcObject.has("game_version") && dcObject.get("game_version").isJsonPrimitive() && dcObject.get("game_version").getAsJsonPrimitive().isString()) {
                         dlCfgGv = dcObject.get("game_version").getAsString();
                     } else cpe("Entry 'game_version' in download config '%s' was nonexistent or not a string", dcKey);
-                    DownloadConfig.Builder dlCfg = new DownloadConfig.Builder(dlCfgId, dlCfgLv, dlCfgGv);
+                    if (dcObject.has("separate_game_dir") && dcObject.get("separate_game_dir").isJsonPrimitive() && dcObject.get("separate_game_dir").getAsJsonPrimitive().isBoolean()) {
+                        separateGameDir = dcObject.get("separate_game_dir").getAsBoolean();
+                    } else cpe("Entry 'separate_game_dir' in download config '%s' was nonexistent or not a boolean", dcKey);
+                    DownloadConfig.Builder dlCfg = new DownloadConfig.Builder(dlCfgId, dlCfgLv, dlCfgGv, separateGameDir);
                     if (dcObject.has("downloads") && dcObject.get("downloads").isJsonObject()) {
                         JsonObject dlHolder = dcObject.getAsJsonObject("downloads");
                         for (String dlKey : dlHolder.keySet()) {

@@ -132,7 +132,9 @@ public final class BundleInstaller {
             profile.addProperty("lastVersionId", download.id);
             profile.addProperty("name", name);
             profile.addProperty("type", "custom");
-            profile.addProperty("gameDir", gameDir.resolve(".bundle").resolve(download.id).toString());
+            if (download.separateGameDir) {
+                profile.addProperty("gameDir", gameDir.resolve(".bundle").resolve(download.id).toString());
+            }
             pfObj.add(installerProperties.getProperty("launcher_profile_id"), profile);
             lpObj.add("profiles", pfObj);
         } else throw new IOException("File 'launcher_profiles.json' is not complete");

@@ -8,12 +8,14 @@ public final class DownloadConfig {
     public final String id;
     public final String loaderVersion;
     public final String gameVersion;
+    public final boolean separateGameDir;
     public final ImmutableMap<String, ImmutableList<AbstractDownload>> downloads;
 
-    private DownloadConfig(String id, String loaderVersion, String gameVersion, ImmutableMap<String, ImmutableList<AbstractDownload>> downloads) {
+    private DownloadConfig(String id, String loaderVersion, String gameVersion, boolean separateGameDir, ImmutableMap<String, ImmutableList<AbstractDownload>> downloads) {
         this.id = id;
         this.loaderVersion = loaderVersion;
         this.gameVersion = gameVersion;
+        this.separateGameDir = separateGameDir;
         this.downloads = downloads;
     }
 
@@ -27,11 +29,13 @@ public final class DownloadConfig {
         private final String id;
         private final String loaderVersion;
         private final String gameVersion;
+        private final boolean separateGameDir;
 
-        public Builder(String id, String loaderVersion, String gameVersion) {
+        public Builder(String id, String loaderVersion, String gameVersion, boolean separateGameDir) {
             this.id = id;
             this.loaderVersion = loaderVersion;
             this.gameVersion = gameVersion;
+            this.separateGameDir = separateGameDir;
         }
 
         public Builder with(String id, AbstractDownload ... dls) {
@@ -40,7 +44,7 @@ public final class DownloadConfig {
         }
 
         public DownloadConfig build() {
-            return new DownloadConfig(id, loaderVersion, gameVersion, downloads.build());
+            return new DownloadConfig(id, loaderVersion, gameVersion, separateGameDir, downloads.build());
         }
     }
 }

@@ -23,6 +23,24 @@ public enum Downloads {;
         return new CurseDownload(name, projectId, fileId);
     }
 
+    public static AbstractDownload modrinthDownload(String name, JsonObject data) throws ConfigParseException {
+        JsonElement id = data.get("version_id");
+        JsonElement sha1 = data.get("sha1");
+
+        String versionId;
+        String sha1Hash;
+
+        if (id.isJsonPrimitive() && id.getAsJsonPrimitive().isString()) {
+            versionId = id.getAsString();
+        } else throw new ConfigParseException("Field 'version_id' must be a string!");
+
+        if (sha1.isJsonPrimitive() && sha1.getAsJsonPrimitive().isString()) {
+            sha1Hash = sha1.getAsString();
+        } else throw new ConfigParseException("Field 'sha1' must be a string!");
+
+        return new ModrinthDownload(name, versionId, sha1Hash);
+    }
+
     public static AbstractDownload directDownload(String name, JsonObject data) throws ConfigParseException {
         JsonElement urlElement = data.get("url");
 

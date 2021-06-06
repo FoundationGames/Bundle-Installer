@@ -1,9 +1,10 @@
 {
     "download_configs": {
-        "Bundle Example": {
-            "id": "bundle-example",
-            "loader_version": "0.11.3",
+        "Bundle Example 0.0.0 for 1.16.5": {
+            "id": "bundle-example-0.0.0+1.16.5",
+            "loader_version": "0.13.1-rc.6",
             "game_version": "1.16.5",
+            "separate_game_dir": true,
             "downloads": {
             }
         }
