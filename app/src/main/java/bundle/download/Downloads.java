@@ -41,6 +41,18 @@ public enum Downloads {;
         return new ModrinthDownload(name, versionId, sha1Hash);
     }
 
+    public static AbstractDownload includedDownload(String name, JsonObject data) throws ConfigParseException {
+        JsonElement fileNameElement = data.get("file_name");
+
+        String fileName;
+
+        if (fileNameElement.isJsonPrimitive() && fileNameElement.getAsJsonPrimitive().isString()) {
+            fileName = fileNameElement.getAsString();
+        } else throw new ConfigParseException("Field 'file_name' must be a string!");
+
+        return new IncludedDownload(name, fileName);
+    }
+
     public static AbstractDownload directDownload(String name, JsonObject data) throws ConfigParseException {
         JsonElement urlElement = data.get("url");
 

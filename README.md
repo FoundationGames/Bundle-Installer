@@ -106,6 +106,7 @@ The next file to change will be `installer_config.json`, also located in `app/sr
        - `"loader_version" : string` The valid string for the version of Quilt Loader your download config will use, for example `0.13.1-rc.6`. You can find all versions listed [here.](https://meta.quiltmc.org/v3/versions/loader) <br/>
        - `"game_version" : string` The valid string for the version of Minecraft your download config will use, for example `1.16.5`. <br/>
        - `"separate_game_dir" : boolean` Whether to use an entirely different game directory (for content modpacks), or use the vanilla directory while accessing only mods and configs separately (**This will only work with a Uuilt loader version merging [this PR's](https://github.com/QuiltMC/quilt-loader/pull/20) code**) <br/>
+       - `"copy_game_dir" : string` _OPTIONAL_ - The name of a zip file (with `.zip` extension) located in `src/main/resources/game_dirs` containing files you wish to copy into the bundle game directory. (Useful for including configuration files) <br/>
        - `"downloads" : {}` Contains this download config's downloads. <br/>
            - `"<download name>" : []` A download object array, containing all the possible download sources in order of priority. Only one of the downloads in the array will actually be used, and the downloads will be ordered in priority (i.e. the first one will be tested to work first, and so on). This is in case a mod is removed from one source online, it is possible to have backups.
                - `{}` A download object, with a type and a data object.
@@ -116,6 +117,13 @@ The next file to change will be `installer_config.json`, also located in `app/sr
 - CurseForge - `"curse"`, Data Object Contains:
     - `"project" : int` - The Project ID found on the CurseForge page.
     - `"file" : int` - The File ID found at the end of the file page's URL.
+<br/><br/>
+- Modrinth - `"modrinth"`, Data Object Contains:
+    - `"version_id" : string` - The version's ID string in the URL to the version.
+    - `"sha1" : string` - The sha1 hash of the desired file in the version (viewable with Modrinth's api)
+<br/><br/>
+- Included Jar File - `"included"`, Data Object Contains:
+    - `"file_name" : string` - The filename (with `.jar` extension) of a jar file packaged within the installer, which you must put in `src/main/resources/jars/`
 <br/><br/>
 - Direct URL - `"direct"`, Data Object Contains:
     - `"url" : string` - The URL to a direct download for the mod jar file.

@@ -13,10 +13,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public final class BundleInstaller {
     public Path gameDir;
@@ -104,7 +103,16 @@ public final class BundleInstaller {
             Files.createDirectory(bundleDir);
         }
 
-        return DownloadManager.downloadFilesTo(bundleDir, dlConfig);
+        Path installDir = bundleDir.resolve(dlConfig.id);
+        if (!Files.exists(installDir) || !Files.isDirectory(installDir)) {
+            Files.createDirectory(installDir);
+        }
+
+        if (dlConfig.gameDirToCopy != null) {
+            copyZipToInstall(dlConfig, installDir);
+        }
+
+        return DownloadManager.downloadFilesTo(installDir, dlConfig);
     }
 
     private void makeLauncherProfile(String name, DownloadConfig download) throws IOException {
@@ -142,5 +150,36 @@ public final class BundleInstaller {
         BufferedWriter writer = Files.newBufferedWriter(profiles);
         gson.toJson(lpObj, writer);
         writer.close();
+    }
+
+    private void copyZipToInstall(DownloadConfig download, Path installDir) throws IOException {
+        InputStream is = App.class.getClassLoader().getResourceAsStream("game_dirs/"+download.gameDirToCopy);
+        if (is != null) {
+            ZipInputStream zip = new ZipInputStream(is);
+
+            ZipEntry entry = zip.getNextEntry();
+            while (entry != null) {
+                Path target = installDir.resolve(entry.getName());
+                if (!entry.isDirectory()) {
+                    Path parent = target.getParent();
+                    if (!Files.exists(parent)) {
+                        Files.createDirectories(parent);
+                    }
+                    BufferedOutputStream w = new BufferedOutputStream(new FileOutputStream(target.toString()));
+                    byte[] buf = new byte[2048];
+                    int read;
+                    while ((read = zip.read(buf)) != -1) {
+                        w.write(buf, 0, read);
+                    }
+                    w.close();
+                } else if (!Files.exists(target)) {
+                    Files.createDirectories(target);
+                }
+                zip.closeEntry();
+                entry = zip.getNextEntry();
+            }
+
+            zip.close();
+        }
     }
 }

@@ -3,19 +3,22 @@ package bundle.config;
 import bundle.download.AbstractDownload;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.jetbrains.annotations.Nullable;
 
 public final class DownloadConfig {
     public final String id;
     public final String loaderVersion;
     public final String gameVersion;
     public final boolean separateGameDir;
+    public final @Nullable String gameDirToCopy;
     public final ImmutableMap<String, ImmutableList<AbstractDownload>> downloads;
 
-    private DownloadConfig(String id, String loaderVersion, String gameVersion, boolean separateGameDir, ImmutableMap<String, ImmutableList<AbstractDownload>> downloads) {
+    private DownloadConfig(String id, String loaderVersion, String gameVersion, boolean separateGameDir, @Nullable String gameDirToCopy, ImmutableMap<String, ImmutableList<AbstractDownload>> downloads) {
         this.id = id;
         this.loaderVersion = loaderVersion;
         this.gameVersion = gameVersion;
         this.separateGameDir = separateGameDir;
+        this.gameDirToCopy = gameDirToCopy;
         this.downloads = downloads;
     }
 
@@ -29,12 +32,14 @@ public final class DownloadConfig {
         private final String id;
         private final String loaderVersion;
         private final String gameVersion;
+        private final @Nullable String gameDirToCopy;
         private final boolean separateGameDir;
 
-        public Builder(String id, String loaderVersion, String gameVersion, boolean separateGameDir) {
+        public Builder(String id, String loaderVersion, String gameVersion, @Nullable String gameDirToCopy, boolean separateGameDir) {
             this.id = id;
             this.loaderVersion = loaderVersion;
             this.gameVersion = gameVersion;
+            this.gameDirToCopy = gameDirToCopy;
             this.separateGameDir = separateGameDir;
         }
 
@@ -44,7 +49,7 @@ public final class DownloadConfig {
         }
 
         public DownloadConfig build() {
-            return new DownloadConfig(id, loaderVersion, gameVersion, separateGameDir, downloads.build());
+            return new DownloadConfig(id, loaderVersion, gameVersion, separateGameDir, gameDirToCopy, downloads.build());
         }
     }
 }

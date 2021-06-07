@@ -12,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-// TODO: ACTUALLY MAKE WORK, CONFIG PARSING DOES NOT YET EXIST FOR THIS
 public class ModrinthDownload extends AbstractDownload {
     private static final String URL_BASE = "https://api.modrinth.com/api/v1/version/";
 

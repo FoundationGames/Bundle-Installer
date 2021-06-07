@@ -19,16 +19,13 @@ public enum DownloadManager {;
     public static void setup() {
         DOWNLOAD_TYPES.put("curse", Downloads::curseDownload);
         DOWNLOAD_TYPES.put("modrinth", Downloads::modrinthDownload);
+        DOWNLOAD_TYPES.put("included", Downloads::includedDownload);
         DOWNLOAD_TYPES.put("direct", Downloads::directDownload);
     }
 
     public static List<DownloadException> downloadFilesTo(Path path, DownloadConfig config) throws IOException {
         List<DownloadException> errors = new ArrayList<>();
-        Path modFolder = path.resolve(config.id);
-        if (!Files.exists(modFolder) || !Files.isDirectory(modFolder)) {
-            Files.createDirectory(modFolder);
-        }
-        modFolder = modFolder.resolve("mods");
+        Path modFolder = path.resolve("mods");
         if (!Files.exists(modFolder) || !Files.isDirectory(modFolder)) {
             Files.createDirectory(modFolder);
         }
