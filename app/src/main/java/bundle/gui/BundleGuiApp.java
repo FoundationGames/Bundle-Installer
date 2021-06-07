@@ -70,6 +70,9 @@ public class BundleGuiApp extends JFrame {
                         this.finishErrors = this.installer.install();
                         this.finishLabel.setText("Finished Installing "+installer.selectedInstall+ (this.finishErrors.size() > 0 ? " with errors!" : "!"));
                         this.cards.show(main, FINISH_INSTALL_PANEL);
+                        for (Exception e : finishErrors) {
+                            e.printStackTrace();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
