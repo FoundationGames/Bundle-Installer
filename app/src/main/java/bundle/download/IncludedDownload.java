@@ -17,9 +17,9 @@ public class IncludedDownload extends AbstractDownload {
 
     @Override
     public void downloadTo(Path path) throws DownloadException {
-        InputStream jarStream = App.class.getClassLoader().getResourceAsStream("jars/"+fileName);
+        InputStream jarStream = App.class.getClassLoader().getResourceAsStream(fileName);
         if (jarStream == null) {
-            dlEx(String.format("Jar file '%s' not found in 'jars/' folder in installer resources!", fileName));
+            dlEx(String.format("Jar file '%s' not found in installer resources!", fileName));
         }
         try {
             byte[] buf = new byte[jarStream.available()];

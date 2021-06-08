@@ -153,7 +153,7 @@ public final class BundleInstaller {
     }
 
     private void copyZipToInstall(DownloadConfig download, Path installDir) throws IOException {
-        InputStream is = App.class.getClassLoader().getResourceAsStream("game_dirs/"+download.gameDirToCopy);
+        InputStream is = App.class.getClassLoader().getResourceAsStream(download.gameDirToCopy);
         if (is != null) {
             ZipInputStream zip = new ZipInputStream(is);
 
