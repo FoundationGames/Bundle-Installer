@@ -19,7 +19,7 @@ public enum DownloadManager {;
     public static void setup() {
         DOWNLOAD_TYPES.put("curse", Downloads::curseDownload);
         DOWNLOAD_TYPES.put("modrinth", Downloads::modrinthDownload);
-        DOWNLOAD_TYPES.put("included", Downloads::includedDownload);
+        // DOWNLOAD_TYPES.put("included", Downloads::includedDownload);
         DOWNLOAD_TYPES.put("direct", Downloads::directDownload);
     }
 

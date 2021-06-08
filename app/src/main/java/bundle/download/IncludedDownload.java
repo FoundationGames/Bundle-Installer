@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+// will not work and will go unused because java is jank
 public class IncludedDownload extends AbstractDownload {
     public final String fileName;
 
@@ -25,7 +26,7 @@ public class IncludedDownload extends AbstractDownload {
             byte[] buf = new byte[jarStream.available()];
             jarStream.read(buf);
             String[] splitFileName = fileName.split("[\\\\/]");
-            String file = splitFileName[splitFileName.length - 1].replace(".jar.mod", ".jar");
+            String file = splitFileName[splitFileName.length - 1].replace(".zip", ".jar");
             Path dest = path.resolve(file);
             Files.write(dest, buf);
         } catch (IOException e) {
