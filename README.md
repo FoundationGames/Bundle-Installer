@@ -123,7 +123,7 @@ The next file to change will be `installer_config.json`, also located in `app/sr
     - `"sha1" : string` - The sha1 hash of the desired file in the version (viewable with Modrinth's api)
 <br/><br/>
 - Included Jar File - `"included"`, Data Object Contains:
-    - `"file_name" : string` - The filename (with `.jar` extension) of a jar file packaged within the installer, which you must put in `src/main/resources/`
+    - `"file_name" : string` - The filename (including extension) of a valid mod jar file in `src/main/resources`, with that jar file's extension changed from `.jar` to `.jar.mod` in order to preserve the file during build
 <br/><br/>
 - Direct URL - `"direct"`, Data Object Contains:
     - `"url" : string` - The URL to a direct download for the mod jar file.

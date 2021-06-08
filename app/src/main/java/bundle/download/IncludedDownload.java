@@ -25,7 +25,8 @@ public class IncludedDownload extends AbstractDownload {
             byte[] buf = new byte[jarStream.available()];
             jarStream.read(buf);
             String[] splitFileName = fileName.split("[\\\\/]");
-            Path dest = path.resolve(splitFileName[splitFileName.length - 1]);
+            String file = splitFileName[splitFileName.length - 1].replace(".jar.mod", ".jar");
+            Path dest = path.resolve(file);
             Files.write(dest, buf);
         } catch (IOException e) {
             dlEx(e);
